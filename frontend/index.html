@@ -7,40 +7,72 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <main class="card">
-    <header class="card-header">
+  <div class="page">
+    <header class="page-header">
       <p class="eyebrow">Twilio</p>
-      <h1>OTP Testing Portal</h1>
-      <p class="subtitle">Test Twilio Verify channels from one place.</p>
+      <h1>Testing Portal</h1>
+      <p class="subtitle">A developer dashboard for testing Twilio Verify and SendGrid.</p>
     </header>
 
-    <!-- Step 1: request an OTP for a phone number -->
-    <section id="send-section">
-      <label for="phone-number">Phone Number</label>
-      <input
-        type="tel"
-        id="phone-number"
-        placeholder="+919876543210"
-        autocomplete="off"
-      />
-      <p class="hint">Use full E.164 format, e.g. +91 for India.</p>
+    <div class="panels">
+      <section class="panel">
+        <h2 class="panel-title">OTP Verification</h2>
 
-      <p class="field-label">Verification Channel</p>
-      <div class="channel-buttons">
-        <button id="send-sms-btn">SMS OTP</button>
-        <button id="send-whatsapp-btn">WHATSAPP OTP</button>
-      </div>
-    </section>
+        <!-- Step 1: request an OTP for a phone number -->
+        <div id="send-section">
+          <label for="phone-number">Phone Number</label>
+          <input
+            type="tel"
+            id="phone-number"
+            placeholder="+919876543210"
+            autocomplete="off"
+          />
+          <p class="hint">Use full E.164 format, e.g. +91 for India.</p>
+          <button id="send-sms-btn" class="primary-btn">SEND SMS OTP</button>
+        </div>
 
-    <!-- Step 2: submit the code Twilio sent -->
-    <section id="verify-section" class="hidden">
-      <label for="otp-code">Verification Code</label>
-      <input type="text" id="otp-code" placeholder="123456" autocomplete="off" />
-      <button id="verify-btn" class="primary-btn">VERIFY OTP</button>
-    </section>
+        <!-- Step 2: submit the code Twilio sent -->
+        <div id="verify-section" class="hidden">
+          <label for="otp-code">OTP Code</label>
+          <input type="text" id="otp-code" placeholder="123456" autocomplete="off" />
+          <button id="verify-btn" class="primary-btn">VERIFY OTP</button>
+        </div>
 
-    <p id="status-message"></p>
-  </main>
+        <p id="status-message"></p>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">Email Testing</h2>
+
+        <label for="email-recipient">Recipient Email</label>
+        <input
+          type="email"
+          id="email-recipient"
+          placeholder="example@email.com"
+          autocomplete="off"
+        />
+
+        <label for="email-subject">Subject</label>
+        <input
+          type="text"
+          id="email-subject"
+          placeholder="Twilio Email Test"
+          autocomplete="off"
+        />
+
+        <label for="email-message">Message</label>
+        <textarea
+          id="email-message"
+          rows="4"
+          placeholder="This is a test email from my Twilio Testing Portal."
+        ></textarea>
+
+        <button id="send-email-btn" class="primary-btn">SEND TEST EMAIL</button>
+
+        <p id="email-status-message"></p>
+      </section>
+    </div>
+  </div>
 
   <script src="js/app.js"></script>
 </body>

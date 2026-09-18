@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # Load backend/.env so TWILIO_* / DB_* variables are available via os.getenv().
 load_dotenv()
 
+from routes.email import router as email_router  # noqa: E402
 from routes.otp import router as otp_router  # noqa: E402
 
 app = FastAPI(title="Twilio Testing Portal")
@@ -21,6 +22,7 @@ app.add_middleware(
 )
 
 app.include_router(otp_router)
+app.include_router(email_router)
 
 
 @app.get("/")

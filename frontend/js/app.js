@@ -6,7 +6,6 @@ const verifySection = document.getElementById("verify-section");
 const phoneInput = document.getElementById("phone-number");
 const otpInput = document.getElementById("otp-code");
 const sendSmsBtn = document.getElementById("send-sms-btn");
-const sendWhatsappBtn = document.getElementById("send-whatsapp-btn");
 const verifyBtn = document.getElementById("verify-btn");
 const statusMessage = document.getElementById("status-message");
 
@@ -39,16 +38,17 @@ function extractErrorMessage(data, fallback) {
   return fallback;
 }
 
-// Browser -> FastAPI -> Twilio Verify -> OTP (SMS or WhatsApp)
+// Browser -> FastAPI -> Twilio Verify -> SMS OTP
+// (WhatsApp channel support still exists server-side; only the SMS button
+// is wired up in the UI for now.)
 async function sendOtp(channel) {
   const phoneNumber = phoneInput.value.trim();
   const channelLabel = channel === "whatsapp" ? "WhatsApp" : "SMS";
   showStatus(`Sending ${channelLabel} OTP...`, false);
 
-  // Disable both channel buttons while a send is in flight to prevent
+  // Disable the send button while a send is in flight to prevent
   // accidental repeated OTP requests.
   sendSmsBtn.disabled = true;
-  sendWhatsappBtn.disabled = true;
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/otp/send`, {
@@ -70,12 +70,10 @@ async function sendOtp(channel) {
     showStatus("Could not reach the backend.", true);
   } finally {
     sendSmsBtn.disabled = false;
-    sendWhatsappBtn.disabled = false;
   }
 }
 
 sendSmsBtn.addEventListener("click", () => sendOtp("sms"));
-sendWhatsappBtn.addEventListener("click", () => sendOtp("whatsapp"));
 
 // User enters OTP -> FastAPI -> Twilio Verify verification check
 verifyBtn.addEventListener("click", async () => {
@@ -109,5 +107,68 @@ verifyBtn.addEventListener("click", async () => {
     showStatus("Could not reach the backend.", true);
   } finally {
     verifyBtn.disabled = false;
+  }
+});
+
+// --- Email Testing (SendGrid) ---
+
+const emailRecipientInput = document.getElementById("email-recipient");
+const emailSubjectInput = document.getElementById("email-subject");
+const emailMessageInput = document.getElementById("email-message");
+const sendEmailBtn = document.getElementById("send-email-btn");
+const emailStatusMessage = document.getElementById("email-status-message");
+
+function showEmailStatus(message, isError) {
+  emailStatusMessage.textContent = message;
+  emailStatusMessage.className = isError ? "error" : "success";
+}
+
+// Browser -> FastAPI -> SendGrid -> test email
+sendEmailBtn.addEventListener("click", async () => {
+  const recipientEmail = emailRecipientInput.value.trim();
+  const subject = emailSubjectInput.value.trim();
+  const message = emailMessageInput.value.trim();
+
+  if (!recipientEmail) {
+    showEmailStatus("Recipient email is required.", true);
+    return;
+  }
+  if (!subject) {
+    showEmailStatus("Subject is required.", true);
+    return;
+  }
+  if (!message) {
+    showEmailStatus("Message is required.", true);
+    return;
+  }
+
+  showEmailStatus("Sending email...", false);
+
+  // Disable while a send is in flight to prevent accidental repeated sends.
+  sendEmailBtn.disabled = true;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/email/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        recipient_email: recipientEmail,
+        subject,
+        message,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showEmailStatus(extractErrorMessage(data, "Failed to send email."), true);
+      return;
+    }
+
+    showEmailStatus("Email sent successfully.", false);
+  } catch (err) {
+    showEmailStatus("Could not reach the backend.", true);
+  } finally {
+    sendEmailBtn.disabled = false;
   }
 });
