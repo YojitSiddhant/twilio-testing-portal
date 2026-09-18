@@ -1,9 +1,10 @@
 """
 Twilio Verify service.
 
-Responsible only for talking to Twilio Verify — sending an SMS OTP and
-checking a code the user submits. Twilio manages code generation, storage
-and expiry; we never generate, store, or see the "real" OTP value.
+Responsible only for talking to Twilio Verify — sending an OTP (via SMS or
+WhatsApp) and checking a code the user submits. Twilio manages code
+generation, storage and expiry; we never generate, store, or see the "real"
+OTP value.
 """
 
 import os
@@ -29,11 +30,15 @@ def _get_client() -> tuple[Client, str]:
     return Client(account_sid, auth_token), verify_service_sid
 
 
-def send_verification_code(phone_number: str) -> str:
-    """Browser -> FastAPI -> Twilio Verify: request an SMS OTP for phone_number."""
+def send_verification_code(phone_number: str, channel: str = "sms") -> str:
+    """Browser -> FastAPI -> Twilio Verify: request an OTP for phone_number.
+
+    `channel` is passed straight through to Twilio Verify ("sms" or
+    "whatsapp") using the same Verify Service.
+    """
     client, verify_service_sid = _get_client()
     verification = client.verify.v2.services(verify_service_sid).verifications.create(
-        to=phone_number, channel="sms"
+        to=phone_number, channel=channel
     )
     return verification.status
 

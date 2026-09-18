@@ -27,6 +27,15 @@ _TWILIO_ERROR_MESSAGES = {
         "Twilio Console. Verify it under Phone Numbers > Verified Caller IDs."
     ),
     21211: "Invalid 'To' phone number.",
+    63007: (
+        "WhatsApp channel is not configured for this Verify Service. "
+        "A WhatsApp sender must be set up in the Twilio Console."
+    ),
+    63016: (
+        "This WhatsApp number has not opted in / does not have an open "
+        "session with the sender. WhatsApp Verify may require the "
+        "recipient to message the sender first."
+    ),
 }
 
 
@@ -36,9 +45,10 @@ def _friendly_twilio_error(exc: TwilioRestException) -> str:
 
 @router.post("/send", response_model=OtpResponse)
 def send_otp(payload: SendOtpRequest):
-    # Browser -> FastAPI -> Twilio Verify: ask Twilio to send an SMS OTP.
+    # Browser -> FastAPI -> Twilio Verify: ask Twilio to send an OTP via the
+    # chosen channel (sms or whatsapp), using the same Verify Service.
     try:
-        status = send_verification_code(payload.phone_number)
+        status = send_verification_code(payload.phone_number, payload.channel)
     except TwilioConfigError as exc:
         logger.error("Twilio configuration missing")
         raise HTTPException(status_code=500, detail=str(exc)) from exc

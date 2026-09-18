@@ -1,4 +1,5 @@
 import re
+from typing import Literal
 
 from pydantic import BaseModel, field_validator
 
@@ -8,6 +9,7 @@ E164_PATTERN = re.compile(r"^\+[1-9]\d{7,14}$")
 
 class SendOtpRequest(BaseModel):
     phone_number: str
+    channel: Literal["sms", "whatsapp"] = "sms"
 
     @field_validator("phone_number")
     @classmethod
