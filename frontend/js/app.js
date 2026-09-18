@@ -45,6 +45,11 @@ async function sendOtp(channel) {
   const channelLabel = channel === "whatsapp" ? "WhatsApp" : "SMS";
   showStatus(`Sending ${channelLabel} OTP...`, false);
 
+  // Disable both channel buttons while a send is in flight to prevent
+  // accidental repeated OTP requests.
+  sendSmsBtn.disabled = true;
+  sendWhatsappBtn.disabled = true;
+
   try {
     const response = await fetch(`${API_BASE_URL}/api/otp/send`, {
       method: "POST",
@@ -63,6 +68,9 @@ async function sendOtp(channel) {
     verifySection.classList.remove("hidden");
   } catch (err) {
     showStatus("Could not reach the backend.", true);
+  } finally {
+    sendSmsBtn.disabled = false;
+    sendWhatsappBtn.disabled = false;
   }
 }
 
@@ -74,6 +82,9 @@ verifyBtn.addEventListener("click", async () => {
   const phoneNumber = phoneInput.value.trim();
   const code = otpInput.value.trim();
   showStatus("Verifying OTP...", false);
+
+  // Disable while a verification check is in flight.
+  verifyBtn.disabled = true;
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/otp/verify`, {
@@ -96,5 +107,7 @@ verifyBtn.addEventListener("click", async () => {
     }
   } catch (err) {
     showStatus("Could not reach the backend.", true);
+  } finally {
+    verifyBtn.disabled = false;
   }
 });

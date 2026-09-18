@@ -7,32 +7,40 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <h1>TWILIO OTP TESTING</h1>
+  <main class="card">
+    <header class="card-header">
+      <p class="eyebrow">Twilio</p>
+      <h1>OTP Testing Portal</h1>
+      <p class="subtitle">Test Twilio Verify channels from one place.</p>
+    </header>
 
-  <!-- Step 1: request an OTP for a phone number -->
-  <section id="send-section">
-    <label for="phone-number">Phone Number</label>
-    <input
-      type="tel"
-      id="phone-number"
-      placeholder="+919876543210"
-      autocomplete="off"
-    />
-    <p class="hint">Use full E.164 format, e.g. +91 for India.</p>
-    <div class="channel-buttons">
-      <button id="send-sms-btn">SEND SMS OTP</button>
-      <button id="send-whatsapp-btn">SEND WHATSAPP OTP</button>
-    </div>
-  </section>
+    <!-- Step 1: request an OTP for a phone number -->
+    <section id="send-section">
+      <label for="phone-number">Phone Number</label>
+      <input
+        type="tel"
+        id="phone-number"
+        placeholder="+919876543210"
+        autocomplete="off"
+      />
+      <p class="hint">Use full E.164 format, e.g. +91 for India.</p>
 
-  <!-- Step 2: submit the code Twilio sent via SMS -->
-  <section id="verify-section" class="hidden">
-    <label for="otp-code">OTP Code</label>
-    <input type="text" id="otp-code" placeholder="123456" autocomplete="off" />
-    <button id="verify-btn">VERIFY OTP</button>
-  </section>
+      <p class="field-label">Verification Channel</p>
+      <div class="channel-buttons">
+        <button id="send-sms-btn">SMS OTP</button>
+        <button id="send-whatsapp-btn">WHATSAPP OTP</button>
+      </div>
+    </section>
 
-  <p id="status-message"></p>
+    <!-- Step 2: submit the code Twilio sent -->
+    <section id="verify-section" class="hidden">
+      <label for="otp-code">Verification Code</label>
+      <input type="text" id="otp-code" placeholder="123456" autocomplete="off" />
+      <button id="verify-btn" class="primary-btn">VERIFY OTP</button>
+    </section>
+
+    <p id="status-message"></p>
+  </main>
 
   <script src="js/app.js"></script>
 </body>
